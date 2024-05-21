@@ -1,0 +1,66 @@
+---
+# Source: control-tower/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: control-tower-uat-service
+      
+spec:
+  selector:
+    app: control-tower-uat
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+# Source: control-tower/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: control-tower-uat-deployment
+  annotations:
+    version: 0.0.1-2
+      
+spec:
+  strategy: 
+    type: Recreate      
+  replicas: 1
+  selector:
+    matchLabels:
+      app: control-tower-uat
+  template:
+    metadata:
+      labels:
+        app: control-tower-uat      
+      annotations:
+        version: 0.0.1-2
+    spec:
+      containers:
+      - name: control-tower-uat
+        image: ghcr.io/eedorenko/control-tower/control-tower:0.0.1-2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: CLUSTER_NAME
+          valueFrom:
+              configMapKeyRef:
+                name: platform-config
+                key: CLUSTER_NAME
+        - name: REGION
+          valueFrom:
+              configMapKeyRef:
+                name: platform-config
+                key: REGION
+        - name: ENVIRONMENT
+          valueFrom:
+              configMapKeyRef:
+                name: platform-config
+                key: ENVIRONMENT
+        - name: DATABASE_URL
+          valueFrom:
+              configMapKeyRef:
+                name: platform-config
+                key: DATABASE_URL
