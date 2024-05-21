@@ -1,0 +1,25 @@
+apiVersion: hub.kalypso.io/v1alpha1
+kind: DeploymentDescriptor
+metadata:
+  name: control-tower-uat-test
+spec:
+  workload:
+    name: ct
+    source:
+        repo: https://github.com/eedorenko/control-tower
+        branch: main
+        path: .
+    application:
+        name: control-tower              
+        workspace:
+            name: demo-team
+  deploymentTarget:
+    name: uat-test
+    environment: stage-gray
+    manifests:
+        repo: https://github.com/eedorenko/control-tower-gitops
+        branch: stage-gray
+        path: ./uat-test
+  workloadVersion:
+    version: 0.0.1-2
+    commit: 6071424f38951a17c9b7f41c6e83a336b36e3fc6
